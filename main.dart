@@ -74,4 +74,90 @@ class _TaskListScreenState extends State<TaskListScreen> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Task Manager'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: _sortTasksByPriority,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _taskController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter task name',
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: _selectedPriority,
+                  items: ['Low', 'Medium', 'High']
+                      .map((priority) => DropdownMenuItem(
+                            child: Text(priority),
+                            value: priority,
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPriority = value!;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.add, color: Colors.blue),
+                  onPressed: _addTask,
+                )
+              ],
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _tasks.length,
+                itemBuilder: (context, index) {
+                  final task = _tasks[index];
+                  return Card(
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: task.isCompleted,
+                        onChanged: (value) {
+                          _toggleTaskCompletion(index);
+                        },
+                      ),
+                      title: Text(
+                        task.name,
+                        style: TextStyle(
+                          decoration: task.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                      subtitle: Text('Priority: ${task.priority}'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _deleteTask(index);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 //end
